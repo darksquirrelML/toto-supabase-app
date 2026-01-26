@@ -168,36 +168,6 @@ st.write(f"**Dataset:** {len(df)} draws loaded — last draw date: {df.iloc[-1][
 
 
 
-# def load_data(csv_path="data/toto_history_all.csv"):
-
-#     if not os.path.exists(csv_path):
-#         return None
-#     df = pd.read_csv(csv_path)
-#     df.columns = [c.strip() for c in df.columns]
-#     # parse Winning and Additional numbers
-#     df['Winning'] = df['Winning No'].apply(lambda x: [int(i) for i in str(x).split(',')])
-#     df['Additional No'] = df['Additional No'].apply(lambda x: int(x) if pd.notna(x) else None)
-#     # Reverse: oldest → newest
-#     df = df.iloc[::-1].reset_index(drop=True)
-#     return df
-
-# if 'df' not in st.session_state or st.button("Refresh Data"):
-#     st.session_state['df'] = load_data()
-
-# df = st.session_state.get('df')
-# if df is None:
-#     uploaded = st.file_uploader("Upload CSV now", type=['csv'])
-#     if uploaded:
-#         df = pd.read_csv(uploaded)
-#         df.columns = [c.strip() for c in df.columns]
-#         df['Winning'] = df['Winning No'].apply(lambda x: [int(i) for i in str(x).split(',')])
-#         df['Additional No'] = df['Additional No'].apply(lambda x: int(x) if pd.notna(x) else None)
-#         df = df.iloc[::-1].reset_index(drop=True)
-#         st.session_state['df'] = df
-#     else:
-#         st.stop()
-
-# st.write(f"**Dataset:** {len(df)} draws loaded — last draw date: {df.iloc[-1]['Draw Date']}")
 
 # ---------- Helper functions ----------
 @st.cache_data
