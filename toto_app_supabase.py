@@ -26,7 +26,7 @@ from supabase import create_client
 
 # Load from Streamlit Secrets
 SUPABASE_URL = st.secrets["https://fcibqtbavrltcvzhfgjy.supabase.co"]
-SUPABASE_KEY = st.secrets["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjaWJxdGJhdnJsdGN2emhmZ2p5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDIwNjMsImV4cCI6MjA4NDk3ODA2M30.dZCE7TpUZWHnT3vUvuviAZqfi9_MFwqkQHBk0RZNb9A"
+SUPABASE_KEY = st.secrets["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjaWJxdGJhdnJsdGN2emhmZ2p5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDIwNjMsImV4cCI6MjA4NDk3ODA2M30.dZCE7TpUZWHnT3vUvuviAZqfi9_MFwqkQHBk0RZNb9A
 "]
 
 # Create Supabase client
