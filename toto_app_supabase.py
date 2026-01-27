@@ -122,7 +122,9 @@ def load_data_from_supabase(limit=None):
 
     query = supabase.table("toto_results") \
         .select("draw_no, draw_date, winning_no, additional_no") \
-        .order("draw_no", desc=False)  # oldest → newest
+        .order("draw_no", desc=True)  # newest → oldest 
+# .order("draw_no", desc=False)  # oldest → newest
+    
 
     if limit:
         query = query.limit(limit)
@@ -134,6 +136,12 @@ def load_data_from_supabase(limit=None):
 
     df = pd.DataFrame(response.data)
 
+    
+    # restore oldest → newest for ML
+    df = df.sort_values("draw_no").reset_index(drop=True)
+
+    
+    
     # Match your original column names
     df.rename(columns={
         "draw_no": "Draw No",
@@ -165,7 +173,6 @@ if df.empty:
 
 # --- Safe to use df now ---
 st.write(f"**Dataset:** {len(df)} draws loaded — last draw date: {df.iloc[-1]['Draw Date']}")
-
 
 
 
