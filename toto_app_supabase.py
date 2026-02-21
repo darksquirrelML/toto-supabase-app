@@ -27,6 +27,16 @@ SUPABASE_KEY = st.secrets["SUPABASE_ANON_KEY"]
 # Create Supabase client
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+###############################################################
+# ---------------------------
+# Session state init (TOP)
+# ---------------------------
+if "lstm_model" not in st.session_state:
+    st.session_state.lstm_model = None
+
+if "model_trained" not in st.session_state:
+    st.session_state.model_trained = False
+
 ##################################################################################################
 # >>> ADD HERE (after supabase = create_client(...))
 
@@ -48,22 +58,23 @@ def download_model_from_supabase():
 
 
 # Auto-download model at app start
-if not os.path.exists(LOCAL_MODEL_PATH):
-    if download_model_from_supabase():
+# if not os.path.exists(LOCAL_MODEL_PATH):
+#     if download_model_from_supabase():
+#         st.session_state.lstm_model = load_model(LOCAL_MODEL_PATH)
+#         st.session_state.model_trained = True
+
+if st.session_state.lstm_model is None:
+    if os.path.exists(LOCAL_MODEL_PATH):
         st.session_state.lstm_model = load_model(LOCAL_MODEL_PATH)
         st.session_state.model_trained = True
+    else:
+        if download_model_from_supabase():
+            st.session_state.lstm_model = load_model(LOCAL_MODEL_PATH)
+            st.session_state.model_trained = True
 
 ####################################################################################
 
-###############################################################
-# ---------------------------
-# Session state init (TOP)
-# ---------------------------
-if "lstm_model" not in st.session_state:
-    st.session_state.lstm_model = None
 
-if "model_trained" not in st.session_state:
-    st.session_state.model_trained = False
 #################################################################
 
 # --- Optional ML libs ---
