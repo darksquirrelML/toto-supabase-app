@@ -515,14 +515,19 @@ elif tab == "Machine Learning Prediction":
             )
 
             if st.button("Predict next draw (LSTM)"):
+                # if model is None:
+                #     if os.path.exists(model_path):
+                #         with st.spinner("Loading saved model..."):
+                #             model = keras.models.load_model(model_path)
+                #     else:
+                #         st.error("No trained model available. Train or load a model first.")
+                #         model = None
+                model = st.session_state.lstm_model
+                
                 if model is None:
-                    if os.path.exists(model_path):
-                        with st.spinner("Loading saved model..."):
-                            model = keras.models.load_model(model_path)
-                    else:
-                        st.error("No trained model available. Train or load a model first.")
-                        model = None
-
+                    st.error("No trained model available. Train or load a model first.")
+                    st.stop()
+              
                 if model is not None:
                     # Prepare input sequence
                     last_seq = data_X[-window_in:]
