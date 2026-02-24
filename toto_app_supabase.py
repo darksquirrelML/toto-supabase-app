@@ -71,7 +71,8 @@ if st.session_state.lstm_model is None:
         if download_model_from_supabase():
             st.session_state.lstm_model = load_model(LOCAL_MODEL_PATH)
             st.session_state.model_trained = True
-
+            
+st.write("Session model:", st.session_state.lstm_model is not None)
 ####################################################################################
 
 
