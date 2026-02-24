@@ -19,13 +19,10 @@ import time
 
 from supabase import create_client
 
-
 # Load from Streamlit Secrets
-# SUPABASE_URL = st.secrets["SUPABASE_URL"]
-# SUPABASE_KEY = st.secrets["SUPABASE_ANON_KEY"]
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
+SUPABASE_KEY = st.secrets["SUPABASE_ANON_KEY"]
 
-SUPABASE_URL = "https://fcibqtbavrltcvzhfgjy.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjaWJxdGJhdnJsdGN2emhmZ2p5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDIwNjMsImV4cCI6MjA4NDk3ODA2M30.dZCE7TpUZWHnT3vUvuviAZqfi9_MFwqkQHBk0RZNb9A"
 
 # Create Supabase client
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
