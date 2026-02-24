@@ -46,15 +46,29 @@ MODEL_BUCKET = "models"
 MODEL_FILE = "lstm_model.h5"
 LOCAL_MODEL_PATH = "lstm_model.h5"
 
-
 def download_model_from_supabase():
     try:
+        st.write("Attempting to download model from Supabase...")
         data = supabase.storage.from_(MODEL_BUCKET).download(MODEL_FILE)
+
         with open(LOCAL_MODEL_PATH, "wb") as f:
             f.write(data)
+
+        st.success("Model downloaded from Supabase")
         return True
-    except Exception:
+
+    except Exception as e:
+        st.error(f"Download failed: {e}")
         return False
+
+# def download_model_from_supabase():
+#     try:
+#         data = supabase.storage.from_(MODEL_BUCKET).download(MODEL_FILE)
+#         with open(LOCAL_MODEL_PATH, "wb") as f:
+#             f.write(data)
+#         return True
+#     except Exception:
+#         return False
 
 
 # Auto-download model at app start
