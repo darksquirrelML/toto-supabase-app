@@ -491,18 +491,22 @@ elif tab == "Machine Learning Prediction":
 
                 # Save locally
                 model.save(model_path)
-
                 # Upload to Supabase
                 try:
                     with open(LOCAL_MODEL_PATH, "rb") as f:
-                        supabase.storage.from_(MODEL_BUCKET).upload(
+                        response = supabase.storage.from_(MODEL_BUCKET).upload(
                             path=MODEL_FILE,
                             file=f,
                             file_options={"upsert": True}
                         )
+                
                     st.success("Model uploaded to Supabase successfully")
+                    st.write("Upload response:", response)
+                
                 except Exception as e:
-                    st.error(f"Upload failed: {e}")
+                    st.error("Upload failed!")
+                    st.error(e)
+                
                     
                 # # Upload to Supabase
                 # with open(model_path, "rb") as f:
