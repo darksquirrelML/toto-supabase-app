@@ -493,12 +493,24 @@ elif tab == "Machine Learning Prediction":
                 model.save(model_path)
 
                 # Upload to Supabase
-                with open(model_path, "rb") as f:
-                    supabase.storage.from_(MODEL_BUCKET).upload(
-                        MODEL_FILE,
-                        f,
-                        {"upsert": "true"}
-                    )
+                try:
+                    with open(LOCAL_MODEL_PATH, "rb") as f:
+                        supabase.storage.from_(MODEL_BUCKET).upload(
+                            path=MODEL_FILE,
+                            file=f,
+                            file_options={"upsert": True}
+                        )
+                    st.success("Model uploaded to Supabase successfully")
+                except Exception as e:
+                    st.error(f"Upload failed: {e}")
+                    
+                # # Upload to Supabase
+                # with open(model_path, "rb") as f:
+                #     supabase.storage.from_(MODEL_BUCKET).upload(
+                #         MODEL_FILE,
+                #         f,
+                #         {"upsert": "true"}
+                #     )
 
                 progress.progress(100)
                 status.text(f"Training completed in {time.time() - start_time:.1f}s")
