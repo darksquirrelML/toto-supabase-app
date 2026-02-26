@@ -19,13 +19,15 @@ import time
 
 from supabase import create_client
 
+
 # Load from Streamlit Secrets
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_ANON_KEY"]
 
-
 # Create Supabase client
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+
 
 ###############################################################
 # ---------------------------
@@ -36,60 +38,6 @@ if "lstm_model" not in st.session_state:
 
 if "model_trained" not in st.session_state:
     st.session_state.model_trained = False
-
-##################################################################################################
-# >>> ADD HERE (after supabase = create_client(...))
-
-from tensorflow.keras.models import load_model
-
-MODEL_BUCKET = "models"
-MODEL_FILE = "lstm_model.h5"
-LOCAL_MODEL_PATH = "lstm_model.h5"
-
-def download_model_from_supabase():
-    try:
-        st.write("Attempting to download model from Supabase...")
-        data = supabase.storage.from_(MODEL_BUCKET).download(MODEL_FILE)
-
-        with open(LOCAL_MODEL_PATH, "wb") as f:
-            f.write(data)
-
-        st.success("Model downloaded from Supabase")
-        return True
-
-    except Exception as e:
-        st.error(f"Download failed: {e}")
-        return False
-
-# def download_model_from_supabase():
-#     try:
-#         data = supabase.storage.from_(MODEL_BUCKET).download(MODEL_FILE)
-#         with open(LOCAL_MODEL_PATH, "wb") as f:
-#             f.write(data)
-#         return True
-#     except Exception:
-#         return False
-
-
-# Auto-download model at app start
-# if not os.path.exists(LOCAL_MODEL_PATH):
-#     if download_model_from_supabase():
-#         st.session_state.lstm_model = load_model(LOCAL_MODEL_PATH)
-#         st.session_state.model_trained = True
-
-if st.session_state.lstm_model is None:
-    if os.path.exists(LOCAL_MODEL_PATH):
-        st.session_state.lstm_model = load_model(LOCAL_MODEL_PATH)
-        st.session_state.model_trained = True
-    else:
-        if download_model_from_supabase():
-            st.session_state.lstm_model = load_model(LOCAL_MODEL_PATH)
-            st.session_state.model_trained = True
-            
-st.write("Session model:", st.session_state.lstm_model is not None)
-####################################################################################
-
-
 #################################################################
 
 # --- Optional ML libs ---
@@ -176,7 +124,7 @@ def load_data_from_supabase(limit=None):
         .select("draw_no, draw_date, winning_no, additional_no") \
         .order("draw_no", desc=True)  # newest → oldest 
 # .order("draw_no", desc=False)  # oldest → newest
-
+    
 
     if limit:
         query = query.limit(limit)
@@ -188,12 +136,12 @@ def load_data_from_supabase(limit=None):
 
     df = pd.DataFrame(response.data)
 
-
+    
     # restore oldest → newest for ML
     df = df.sort_values("draw_no").reset_index(drop=True)
 
-
-
+    
+    
     # Match your original column names
     df.rename(columns={
         "draw_no": "Draw No",
@@ -272,7 +220,7 @@ tab = st.radio(
 # with tabs[0]:
 if tab == "Trends":
 ############################################################################################    
-
+    
 
     st.header("TOTO Trends & Statistics")
 
@@ -300,8 +248,8 @@ if tab == "Trends":
     # (Your existing trends code continues here…)
 
  ##############################################################################################   
-
-
+    
+    
 #     st.header("Trends")
     freq_df, frames_df = frequency_dataframe(df, num_draws)
     colA, colB = st.columns([2,1])
@@ -371,7 +319,18 @@ elif tab == "Machine Learning Prediction":
     if not TF_AVAILABLE:
         st.warning("TensorFlow is not installed. Install it (`pip install tensorflow`) to use LSTM features.")
     else:
-
+        # --- ML Controls ---
+        # cols = st.columns([1,1,1,1])
+        # with cols[0]:
+        #     batch_in = st.number_input("Batch size", min_value=8, max_value=512, value=batch_size, key="ml_batch")
+        # with cols[1]:
+        #     train_ratio_in = st.slider("Train ratio", 0.5, 0.95, value=train_ratio, key="ml_train_ratio")
+        # with cols[2]:
+        #     epochs_in = st.number_input("Epochs", min_value=1, max_value=600, value=train_epochs, key="ml_epochs")
+        # with cols[3]:
+        #     window_in = st.number_input("Window size", min_value=1, max_value=30, value=window_size, key="ml_window")
+        # seed_in = st.number_input("Random seed", value=seed, key="ml_seed")
+        # mc_samples = st.number_input("MC passes for prediction", min_value=1, max_value=200, value=20, key="ml_mc")
 
         # --- Helper function: convert draws to multihot encoding ---
         def draws_to_multihot(df_in):
@@ -413,20 +372,12 @@ elif tab == "Machine Learning Prediction":
                 return model
 
             model = None
-            # if os.path.exists(model_path):
-            #     st.info("Saved model found on disk")
-            #     if st.button("Load saved model"):
-            #         with st.spinner("Loading model..."):
-            #             model = keras.models.load_model(model_path)
-            #         st.success("Model loaded")
-#############################################################################################################
-            if st.session_state.lstm_model is not None:
-                model = st.session_state.lstm_model
-                st.success("Model loaded (from session / Supabase)")
-
-############################################################################################################
-
-
+            if os.path.exists(model_path):
+                st.info("Saved model found on disk")
+                if st.button("Load saved model"):
+                    with st.spinner("Loading model..."):
+                        model = keras.models.load_model(model_path)
+                    st.success("Model loaded")
 
             # ---- Train LSTM ----
             if st.button("Train LSTM model", key="train_lstm"):
@@ -480,57 +431,10 @@ elif tab == "Machine Learning Prediction":
                         "val_loss": history_logs['val_loss']
                     })
 
-#################################################################################################################
-                # model.save(model_path)
-                # progress.progress(100)
-                # status.text(f"Training completed in {time.time() - start_time:.1f}s — model saved")
-                # st.success("Model training finished and saved")
-
-
-                # >>> REPLACE THIS BLOCK
-
-                # Save locally
                 model.save(model_path)
-                # Upload to Supabase
-                try:
-                    with open(LOCAL_MODEL_PATH, "rb") as f:
-                        response = supabase.storage.from_(MODEL_BUCKET).upload(
-                            path=MODEL_FILE,
-                            file=f,
-                            file_options={"upsert": True}
-                        )
-                
-                    st.success("Model uploaded to Supabase successfully")
-                    st.write("Upload response:", response)
-                
-                except Exception as e:
-                    st.error("Upload failed!")
-                    st.error(e)
-                
-                    
-                # # Upload to Supabase
-                # with open(model_path, "rb") as f:
-                #     supabase.storage.from_(MODEL_BUCKET).upload(
-                #         MODEL_FILE,
-                #         f,
-                #         {"upsert": "true"}
-                #     )
-
                 progress.progress(100)
-                status.text(f"Training completed in {time.time() - start_time:.1f}s")
-                st.success("Model saved locally & uploaded to Supabase")
-
-                # Mark session as trained
-                st.session_state.model_trained = True
-
-###################################################################################################################
-
-
-
-
-
-
-
+                status.text(f"Training completed in {time.time() - start_time:.1f}s — model saved")
+                st.success("Model training finished and saved")
 ########################################################################################################################
             # ---------------- Prediction with MC forward passes + progress ----------------
             st.markdown("### Predict next draw (LSTM)")
@@ -546,19 +450,14 @@ elif tab == "Machine Learning Prediction":
             )
 
             if st.button("Predict next draw (LSTM)"):
-                # if model is None:
-                #     if os.path.exists(model_path):
-                #         with st.spinner("Loading saved model..."):
-                #             model = keras.models.load_model(model_path)
-                #     else:
-                #         st.error("No trained model available. Train or load a model first.")
-                #         model = None
-                model = st.session_state.lstm_model
-                
                 if model is None:
-                    st.error("No trained model available. Train or load a model first.")
-                    st.stop()
-              
+                    if os.path.exists(model_path):
+                        with st.spinner("Loading saved model..."):
+                            model = keras.models.load_model(model_path)
+                    else:
+                        st.error("No trained model available. Train or load a model first.")
+                        model = None
+
                 if model is not None:
                     # Prepare input sequence
                     last_seq = data_X[-window_in:]
@@ -627,7 +526,7 @@ elif tab == "Machine Learning Prediction":
                     st.success(f"Predicted numbers (6 main + 1 additional): {top7_idx}")
                     st.table(pd.DataFrame(table_data).set_index('Number'))
 
-
+          
 ######################################################################################################################
                     if REPORTLAB_AVAILABLE:
                         try:
