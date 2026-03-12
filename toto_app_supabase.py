@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 ###SUPABASE###
 
 # Toto Prediction Dashboard — Dark Theme, 7-number support, click-to-refresh
@@ -110,10 +104,10 @@ with st.sidebar:
     st.header("Settings")
     num_draws = st.slider("Number of past draws to analyze", min_value=20, max_value=2000, value=300, step=10)
     show_animated = st.checkbox("Show animated trend", True)
-    train_epochs = st.number_input("LSTM train epochs", min_value=1, max_value=600, value=200)
+    train_epochs = st.number_input("LSTM train epochs", min_value=1, max_value=600, value=500)
     batch_size = st.number_input("Batch size", min_value=8, max_value=512, value=64)
     train_ratio = st.slider("Train ratio", 0.5, 0.95, 0.85)
-    window_size = st.number_input("LSTM window size", min_value=1, max_value=30, value=10)
+    window_size = st.number_input("LSTM window size", min_value=1, max_value=30, value=15)
     seed = st.number_input("Random seed", value=42)
     st.markdown("---")
     st.markdown("<small style='color:#8d99a6'>Tip: Put your historical CSV file named <code>toto_history_all.csv</code> in this app folder. The CSV must contain columns: Draw No, Draw Date, Winning No (comma-separated 6 numbers), Additional No.</small>", unsafe_allow_html=True)
